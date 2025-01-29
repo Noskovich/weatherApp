@@ -3,22 +3,72 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="style.css" />
-    <title>Document</title>
+    <title>Weather App</title>
   </head>
   <body>
-    <div class="weather-container">
-      <h1>Прогноз погоды</h1>
-      <div class="search-box">
-        <input type="text" id="city" placeholder="Введите город..." />
-        <button id="searchButton">Найти</button>
+    <div class="container">
+      <div class="left-info">
+        <div class="img-gradient"></div>
+        <div class="today-info">
+          <h2>Today</h2>
+          <span>29 January 2025</span>
+          <div>
+            <i class="bx bx-current-location"></i>
+            <span id="city-name">Paris, FR</span>
+          </div>
+        </div>
+        <div class="today-weather">
+          <i class="bx bx-sun"></i>
+          <h1 class="weather-temp">25°C</h1>
+          <h3>Sunny</h3>
+        </div>
       </div>
-      <div id="weatherInfo" class="weather-info">
-        <p id="cityName"></p>
-        <p id="temperature"></p>
-        <p id="description"></p>
-        <p id="humidity"></p>
-        <p id="windSpeed"></p>
+      <div class="right-info">
+        <div class="day-info">
+          <input type="text" id="city" placeholder="Enter the City" />
+          <div class="btn-container">
+            <button class="location-btn">Search City</button>
+          </div>
+          <div>
+            <span class="title">precipitation</span>
+            <span class="value">4%</span>
+          </div>
+          <div>
+            <span class="title">wind speed</span>
+            <span class="value">5 m/s</span>
+          </div>
+          <div>
+            <span class="title">humidity</span>
+            <span class="value">96%</span>
+          </div>
+        </div>
+        <ul class="days-list">
+          <li>
+            <i class="bx bx-cloud-rain"></i>
+            <span>Fri</span>
+            <span class="day-temp">15°C</span>
+          </li>
+          <li>
+            <i class="bx bx-cloud-rain"></i>
+            <span>Sat</span>
+            <span class="day-temp">15°C</span>
+          </li>
+          <li>
+            <i class="bx bx-cloud-snow"></i>
+            <span>Sun</span>
+            <span class="day-temp">15°C</span>
+          </li>
+          <li>
+            <i class="bx bx-cloud"></i>
+            <span>Mon</span>
+            <span class="day-temp">15°C</span>
+          </li>
+        </ul>
       </div>
     </div>
     <script src="script.js"></script>
