@@ -1,4 +1,3 @@
-const city = document.getElementById("city").value;
 const apiKey = "1742cda330b290539516219a807e13aa";
 const locationBtn = document.querySelector(".location-btn");
 const todayInfo = document.querySelector(".today-info");
@@ -6,9 +5,10 @@ const todayWeatherIcon = document.querySelector(".today-weather i");
 const todayTemp = document.querySelector(".weather-temp");
 const daysList = document.querySelector(".days-list");
 
+// Mapping of weather condition codes to icon class names (Depending on Openweather Api Response)
 const weatherIconMap = {
   "01d": "sun",
-  "01d": "moon",
+  "01n": "moon",
   "02d": "sun",
   "02n": "moon",
   "03d": "cloud",
@@ -27,16 +27,17 @@ const weatherIconMap = {
   "50n": "water",
 };
 
-function getWeatherData(loc) {
-  const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${loc}&units=metric&appid=${apiKey}`;
+function fetchWeatherData(location) {
+  // Construct the API url with the location and api key
+  const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${location}&appid=${apiKey}&units=metric`;
 
+  // Fetch weather data from api
   fetch(apiUrl)
     .then((response) => response.json())
     .then((data) => {
-      // update today info
+      // Update todays info
       const todayWeather = data.list[0].weather[0].description;
-
-      const todayTemerature = `${Math.round(data.list[0].main.temp)}°C`;
+      const todayTemperature = `${Math.round(data.list[0].main.temp)}°C`;
       const todayWeatherIconCode = data.list[0].weather[0].icon;
 
       todayInfo.querySelector("h2").textContent = new Date().toLocaleDateString(
@@ -50,37 +51,43 @@ function getWeatherData(loc) {
           year: "numeric",
         });
       todayWeatherIcon.className = `bx bx-${weatherIconMap[todayWeatherIconCode]}`;
-      todayTemp.textContent = todayTemerature;
+      todayTemp.textContent = todayTemperature;
 
-      // update location and weather description in the left section
-      const locationElement = document.querySelector("today-info > div > span");
+      // Update location and weather description in the "left-info" section
+      const locationElement = document.querySelector(
+        ".today-info > div > span"
+      );
       locationElement.textContent = `${data.city.name}, ${data.city.country}`;
-      const weatherDescriptionElement =
-        document.querySelector("today-weather > h3");
+
+      const weatherDescriptionElement = document.querySelector(
+        ".today-weather > h3"
+      );
       weatherDescriptionElement.textContent = todayWeather;
 
-      // update today info
+      // Update todays info in the "day-info" section
       const todayPrecipitation = `${data.list[0].pop}%`;
       const todayHumidity = `${data.list[0].main.humidity}%`;
-      const todayWindSpeed = `${data.list[0].wind.speed}m/s`;
+      const todayWindSpeed = `${data.list[0].wind.speed} km/h`;
 
       const dayInfoContainer = document.querySelector(".day-info");
       dayInfoContainer.innerHTML = `
-          <div>
-            <span class="title">precipitation</span>
-            <span class="value">${todayPrecipitation}</span>
-          </div>
-          <div>
-            <span class="title">wind speed</span>
-            <span class="value">${todayWindSpeed}</span>
-          </div>
-          <div>
-            <span class="title">humidity</span>
-            <span class="value">${todayHumidity}</span>
-          </div>`;
 
-      // update next 4 days
+            <div>
+                <span class="title">PRECIPITATION</span>
+                <span class="value">${todayPrecipitation}</span>
+            </div>
+            <div>
+                <span class="title">HUMIDITY</span>
+                <span class="value">${todayHumidity}</span>
+            </div>
+            <div>
+                <span class="title">WIND SPEED</span>
+                <span class="value">${todayWindSpeed}</span>
+            </div>
 
+        `;
+
+      // Update next 4 days weather
       const today = new Date();
       const nextDaysData = data.list.slice(1);
 
@@ -89,41 +96,48 @@ function getWeatherData(loc) {
       daysList.innerHTML = "";
       for (const dayData of nextDaysData) {
         const forecastDate = new Date(dayData.dt_txt);
-        const dayAbbr = forecastDate.toLocaleTimeString("en", {
+        const dayAbbreviation = forecastDate.toLocaleDateString("en", {
           weekday: "short",
         });
         const dayTemp = `${Math.round(dayData.main.temp)}°C`;
         const iconCode = dayData.weather[0].icon;
 
-        if (!uniqueDays.has(dayAbbr) && forecastDate.getDate()) {
-          uniqueDays.add(dayAbbr);
+        // Ensure the day isn't duplicate and today
+        if (
+          !uniqueDays.has(dayAbbreviation) &&
+          forecastDate.getDate() !== today.getDate()
+        ) {
+          uniqueDays.add(dayAbbreviation);
           daysList.innerHTML += `
-          <li>
-            <i class="bx bx-${weatherIconMap[iconCode]}"></i>
-            <span>${dayAbbr}</span>
-            <span class="day-temp">${dayTemp}</span>
-          </li>`;
+                
+                    <li>
+                        <i class='bx bx-${weatherIconMap[iconCode]}'></i>
+                        <span>${dayAbbreviation}</span>
+                        <span class="day-temp">${dayTemp}</span>
+                    </li>
+
+                `;
           count++;
         }
-        // stop after get 4 days
 
-        if (count === 4) {
-          break;
-        }
+        // Stop after getting 4 distinct days
+        if (count === 4) break;
       }
     })
     .catch((error) => {
-      alert(`${error}`);
+      alert(`Error fetching weather data: ${error} (Api Error)`);
     });
 }
 
-// Fetch weather data for defaul location Moscow
-
+// Fetch weather data on document load for default location (Germany)
 document.addEventListener("DOMContentLoaded", () => {
-  const defaultLocation = "Moscow";
-  getWeatherData(defaultLocation);
+  const defaultLocation = "Germany";
+  fetchWeatherData(defaultLocation);
 });
 
 locationBtn.addEventListener("click", () => {
-  getWeatherData(location);
+  const location = prompt("Enter a location :");
+  if (!location) return;
+
+  fetchWeatherData(location);
 });
